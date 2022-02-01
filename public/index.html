@@ -1,0 +1,182 @@
+<html>
+
+    <head>
+        <title> Chat with username </title>
+        <script>
+            var name = prompt("Enter your name");
+        </script>
+
+        <style>
+            *{
+                margin: 5px;
+                padding: 0px;
+            }
+
+            body{
+                font-size: 20px;
+            }
+
+            #form{
+                background-color: white;
+                padding: 5px;
+                position: fixed;
+                bottom: 5px;
+                width: 100%;
+            }
+
+            #form input
+            {
+                width: 80%;
+                background-color: white;
+                padding: 10px;
+                height: 75px;
+            }
+
+            .sendMessage
+            {
+                width: 5%;
+                background-color: #d5eafe;
+                padding: 10px;
+                color: black;
+            }
+            .sendLocation{
+                width: 5%;
+                background-color: #ea3d5b;
+                padding: 10px;
+                color: black;
+            }
+            .sendEmoji{
+                width: 5%;
+                background-color: #ffd13b;
+                padding: 10px;
+                color: black;
+            }
+            #messages{
+                list-style-type: none;
+            }
+
+            #messages li
+            {
+                
+                
+                line-height: 40px;
+                
+            }
+
+            #listMsg
+            {
+                text-align: right;
+                background-color: #d5eafe;                
+                margin-left: 385px;
+                padding: 5px 10px;
+                
+            }
+            #listLoc{
+                text-align: right;
+                background-color: #ea3d5b;                
+                margin-left: 385px;
+                padding: 5px 10px;
+            }
+            #listEmoji{
+                text-align: right;
+                background-color: #ffd13b;                
+                margin-left: 385px;
+                padding: 5px 10px;
+            }
+            #otherMsg
+            {                
+                background-color: #b9e4a8;  
+                max-width: 800px;  
+                padding: 5px 10px;            
+            }
+            #otherLoc
+            {                
+                background-color: #ea3d5b;  
+                max-width: 800px;  
+                padding: 5px 10px;            
+            }
+            #otherEmoji
+            {                
+                background-color: #ffd13b;  
+                max-width: 800px;  
+                padding: 5px 10px;            
+            }
+            h2{
+                text-align: center;
+            }
+
+        </style>
+
+
+    </head>
+
+    <body>
+        <h2>Welcome to my Chat App!</h2>
+        <ul id="messages"></ul>
+
+        <form id="form">
+            <input id="input">
+            <button class="sendMessage" type="submit">SEND</button>
+            <button class="sendLocation" type="submit">SEND</button>
+            <button class="sendEmoji" type="submit">SEND</button>
+        </form>
+
+    </body>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        var socket = io();
+        socket.emit('joining msg', name);
+
+        //sending the message
+        $('.sendMessage').click(function (e){
+            e.preventDefault;
+            //reading the message type in input
+            var message = $('#input').val();
+            //sending it to the socket emit by appending the name to the message
+            socket.emit("chat message", (name + " :: " + message));
+            //append the my own message to the ul as you tag
+            $('#messages').append($('<li id="listMsg">').text('You : ' + message));
+            //making the input box empty
+            $('#input').val("");
+            return false; //important
+        })
+        $('.sendLocation').click(function (e){
+            e.preventDefault;
+            //reading the message type in input
+            var message = $('#input').val();
+            //sending it to the socket emit by appending the name to the message
+            socket.emit("chat location", (name + " shared Location:: " + message));
+            //append the my own message to the ul as you tag
+            $('#messages').append($('<li id="listLoc">').text('You shared Location: ' + message));
+            //making the input box empty
+            $('#input').val("");
+            return false; //important
+        })
+        $('.sendEmoji').click(function (e){
+            e.preventDefault;
+            //reading the message type in input
+            var message = $('#input').val();
+            //sending it to the socket emit by appending the name to the message
+            socket.emit("chat emoji", (name + " shared Emoji:: " + message));
+            //append the my own message to the ul as you tag
+            $('#messages').append($('<li id="listEmoji">').text('You shared Emoji: ' + message));
+            //making the input box empty
+            $('#input').val("");
+            return false; //important
+        })
+        //getting the message
+        socket.on('chat message', function(msg){
+            $('#messages').append($('<li id="otherMsg">').text(msg));
+        });
+        socket.on('chat location', function(msg){
+            $('#messages').append($('<li id="otherLoc">').text(msg));
+        });
+        socket.on('chat emoji', function(msg){
+            $('#messages').append($('<li id="otherEmoji">').text(msg));
+        });
+    </script>
+
+</html>
